@@ -22,7 +22,10 @@ services:
       - underapp-network
 
   underapp-api:
-    image: eclipse-temurin:25-jdk-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: underapp-api:latest
     restart: unless-stopped
     container_name: underapp-api
     ports:
@@ -32,17 +35,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    volumes:
-      - .:/app
-      - ~/.m2:/root/.m2 # Cache de dependências para não baixar tudo toda hora
-    working_dir: /app
-    # O comando compila e já sobe usando o plugin do Spring Boot
-    # Isso evita o erro do "jarfile not found" porque o Maven gerencia a execução
-    command: >
-      sh -c "./mvnw spring-boot:run 
-
-      
-      -Dspring-boot.run.jvmArguments='-Xms256M -Xmx512M -Dspring.devtools.restart.enabled=true'"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://underapp-db:3306/${DB_NAME}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
