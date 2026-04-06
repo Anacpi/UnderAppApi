@@ -5,15 +5,17 @@ import com.tcc.underapp_api.common.errors.ConflictException;
 import com.tcc.underapp_api.common.errors.NotFoundException;
 import com.tcc.underapp_api.database.models.User;
 import com.tcc.underapp_api.database.repository.UserRepository;
-
+import com.tcc.underapp_api.integration.cloudinary.CloudinaryIntegration;
 import com.tcc.underapp_api.modules.user.dto.request.CreateUserRequest;
 import com.tcc.underapp_api.modules.user.dto.request.UpdateUserRequest;
+import com.tcc.underapp_api.modules.user.dto.response.UserResponse;
 import jakarta.transaction.Transactional;
-
 import lombok.AllArgsConstructor;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.tcc.underapp_api.utils.StringUtils.normalizeEmail;
 import static org.hibernate.internal.util.StringHelper.isNotBlank;
@@ -29,6 +31,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryIntegration cloudinaryIntegration;
 
     /**
      * Gets a user by their identifier.
@@ -88,6 +91,18 @@ public class UserService {
         }
     }
 
+    /**
+     * Updates the user's profile data.
+     *
+     * Only non-blank fields provided in the request are updated.
+     *
+     * @param id the user identifier
+     * @param data the data containing the fields to update
+     *
+     * @return the updated user
+     *
+     * @throws NotFoundException if the user is not found
+     */
     @Transactional
     public User updateUser(Long id, UpdateUserRequest data) {
 
@@ -130,5 +145,111 @@ public class UserService {
             .ifPresent(user -> {
                 throw new ConflictException("Email already in use");
             });
+    }
+
+    /**
+     * Uploads a profile image for the specified user.
+     *
+     * The image is uploaded to Cloudinary as a private (authenticated) resource.
+     * The generated public_id is stored in the user entity, and a signed URL
+     * is returned to allow access to the image from the frontend.
+     *
+     * @param userId the identifier of the user uploading the image
+     * @param image the image file to upload (multipart)
+     *
+     * @return a signed URL that allows access to the uploaded image
+     *
+     * @throws ClientException if the image is invalid, too large, or upload fails
+     * @throws NotFoundException  if the user is not found
+     */
+    @Transactional
+    public String uploadProfileImage(Long userId, MultipartFile image) {
+        if (image == null) {
+            throw new ClientException("Image file is null");
+        }
+
+        // Validação de tipo de arquivo
+        String contentType = image.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ClientException("Invalid file type. Only images are allowed.");
+        }
+
+        // Validação de tamanho
+        if (image.getSize() > 5 * 1024 * 1024) { // 5MB
+            throw new ClientException("File size exceeds limit (5MB).");
+        }
+
+        User user = getById(userId);
+
+        // Upload para Cloudinary
+        try {
+            String imagePublicId = cloudinaryIntegration.uploadProfileImage(image, userId);
+            updateProfileImage(user, imagePublicId);
+            return cloudinaryIntegration.generatePrivateImageUrl(imagePublicId);
+        } catch (IOException e) {
+            throw new ClientException("Failed to upload profile image", e.getMessage());
+        }
+    }
+
+    /**
+     * Updates the user's profile image reference.
+     *
+     * Stores the Cloudinary public_id in the user entity for later retrieval
+     * and generation of signed URLs.
+     *
+     * @param user the user to update
+     * @param imagePublicId the Cloudinary public_id of the uploaded image
+     */
+    private void updateProfileImage(User user, String imagePublicId) {
+        user.setProfileImagePublicId(imagePublicId);
+        userRepository.save(user);
+    }
+
+    /**
+     * Removes the user's profile image.
+     *
+     * Deletes the image from Cloudinary using its public_id and clears the
+     * reference in the user entity.
+     *
+     * @param userId the identifier of the user
+     *
+     * @throws NotFoundException if the user is not found
+     * @throws ClientException if the image deletion fails
+     */
+    @Transactional
+    public void removeProfileImage(Long userId) {
+        User user = getById(userId);
+
+        if (user.getProfileImagePublicId() != null) {
+            try {
+                cloudinaryIntegration.deleteImage(user.getProfileImagePublicId());
+            } catch (IOException e) {
+                throw new ClientException("Failed to delete profile image", e.getMessage());
+            }
+
+            user.setProfileImagePublicId(null);
+            userRepository.save(user);
+        }
+    }
+
+    /**
+     * Builds a UserResponse from the given user entity.
+     *
+     * Generates a signed URL for the user's profile image if it exists,
+     * allowing secure access to the image from the frontend.
+     *
+     * @param user the user entity
+     *
+     * @return a UserResponse containing the user's data and profile image URL
+     */
+    public UserResponse getUserResponse(User user) {
+        String imageUrl = null;
+
+        if (user.getProfileImagePublicId() != null) {
+            imageUrl = cloudinaryIntegration
+                    .generatePrivateImageUrl(user.getProfileImagePublicId());
+        }
+
+        return UserResponse.fromEntity(user, imageUrl);
     }
 }

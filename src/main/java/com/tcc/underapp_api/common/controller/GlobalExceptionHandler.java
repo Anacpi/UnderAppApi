@@ -117,6 +117,17 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnauthorizedExcepition.class)
     public ResponseEntity<ApiResponse<String>> handleUnauthorized(UnauthorizedExcepition ex) {
-        return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(401).body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
+     * Handles unexpected runtime exceptions not mapped to a more specific handler.
+     *
+     * @param ex the runtime exception
+     * @return a ResponseEntity with the error response and 500 Internal Server Error status
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(500).body(ApiResponse.error(ex.getMessage()));
     }
 }

@@ -55,6 +55,9 @@ public class User {
     @Column(name = "cep", nullable = false, length = 8)
     private String cep;
 
+    @Column(name = "profile_image_public_id", nullable = true, length = 512)
+    private String profileImagePublicId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @org.hibernate.annotations.CreationTimestamp
     private Instant createdAt;

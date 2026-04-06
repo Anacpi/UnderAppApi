@@ -8,6 +8,7 @@ import com.tcc.underapp_api.modules.auth.dto.Request.RegisterRequest;
 import com.tcc.underapp_api.modules.auth.service.AuthService;
 import com.tcc.underapp_api.modules.user.dto.response.UserResponse;
 
+import com.tcc.underapp_api.modules.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     /**
      * Authenticates a user and returns an access token.
@@ -47,6 +49,6 @@ public class AuthController {
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@RequestBody @Valid RegisterRequest data) {
         User user = authService.register(data);
-        return ApiResponse.success(UserResponse.fromEntity(user));
+        return ApiResponse.success(userService.getUserResponse(user));
     }
 }

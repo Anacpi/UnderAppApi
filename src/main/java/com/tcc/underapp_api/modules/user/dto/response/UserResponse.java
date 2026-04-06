@@ -16,7 +16,8 @@ public record UserResponse(
     String email,
     String firstName,
     String lastName,
-    String cep
+    String cep,
+    String profileImageUrl
 ) {
     /**
      * Creates a UserRecord from a User entity.
@@ -24,13 +25,14 @@ public record UserResponse(
      * @param user the User entity to convert
      * @return a new UserRecord with the entity's data
      */
-    public static UserResponse fromEntity(User user) {
+    public static UserResponse fromEntity(User user, String profileImageUrl) {
         return new UserResponse(
             user.getId(),
             user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
-            user.getCep()
+            user.getCep(),
+            profileImageUrl
         );
     }
 }
