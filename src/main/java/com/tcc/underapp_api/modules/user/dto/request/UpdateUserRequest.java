@@ -1,5 +1,6 @@
 package com.tcc.underapp_api.modules.user.dto.request;
 
+import com.tcc.underapp_api.common.records.ValidationMessages;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -12,23 +13,23 @@ import jakarta.validation.constraints.Size;
  */
 public record UpdateUserRequest(
 
-        @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters")
+        @Size(min = 2, max = 100, message = ValidationMessages.FIRST_NAME_RANGE)
         @Pattern(
                 regexp = "^[A-Za-zÀ-ÿ ]+$",
-                message = "First name must contain only letters"
+                message = ValidationMessages.FIRST_NAME_PATTERN
         )
         String firstName,
 
-        @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters")
+        @Size(min = 2, max = 100, message = ValidationMessages.LAST_NAME_RANGE)
         @Pattern(
                 regexp = "^[A-Za-zÀ-ÿ ]+$",
-                message = "Last name must contain only letters"
+                message = ValidationMessages.LAST_NAME_PATTERN
         )
         String lastName,
 
         @Pattern(
                 regexp = "\\d{8}",
-                message = "CEP must contain exactly 8 digits"
+                message = ValidationMessages.CEP_PATTERN
         )
         String cep
 ) {}

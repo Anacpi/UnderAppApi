@@ -6,6 +6,7 @@ import com.tcc.underapp_api.common.errors.NotFoundException;
 import com.tcc.underapp_api.common.errors.UnauthorizedExcepition;
 import com.tcc.underapp_api.common.records.ApiResponse;
 import com.tcc.underapp_api.common.records.ValidationErrorRecord;
+import com.tcc.underapp_api.common.records.ValidationUserMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,7 +37,10 @@ public class GlobalExceptionHandler {
         List<ValidationErrorRecord> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> new ValidationErrorRecord(error.getField(), error.getDefaultMessage()))
+                .map(error -> new ValidationErrorRecord(
+                        error.getField(),
+                        error.getDefaultMessage(),
+                        ValidationUserMessage.fromTechnicalMessage(error.getDefaultMessage())))
                 .toList();
 
         return ResponseEntity.badRequest().body(new ApiResponse<>("validation error", errors));
@@ -63,12 +67,16 @@ public class GlobalExceptionHandler {
             }
             String expectedType = formatException.getTargetType().getSimpleName();
             String message = String.format("The field '%s' must be of type %s.", fieldName, expectedType);
+            String userMessage = ValidationUserMessage.invalidTypeMessage(fieldName, expectedType);
 
-            ValidationErrorRecord error = new ValidationErrorRecord(fieldName, message);
+            ValidationErrorRecord error = new ValidationErrorRecord(fieldName, message, userMessage);
             return ResponseEntity.badRequest().body(new ApiResponse<>("validation error", List.of(error)));
         }
 
-        ValidationErrorRecord error = new ValidationErrorRecord("body", "Invalid or malformed request body.");
+        ValidationErrorRecord error = new ValidationErrorRecord(
+                "body",
+                ValidationUserMessage.INVALID_BODY.technicalMessage(),
+                ValidationUserMessage.INVALID_BODY.userMessage());
         return ResponseEntity.badRequest().body(new ApiResponse<>("validation error", List.of(error)));
     }
 

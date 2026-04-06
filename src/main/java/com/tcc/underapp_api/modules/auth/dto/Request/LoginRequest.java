@@ -1,5 +1,6 @@
 package com.tcc.underapp_api.modules.auth.dto.Request;
 
+import com.tcc.underapp_api.common.records.ValidationMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,12 +13,12 @@ import jakarta.validation.constraints.Size;
  */
 public record LoginRequest(
 
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email address")
-        @Size(max = 254, message = "Email must have at most 254 characters")
+        @NotBlank(message = ValidationMessages.EMAIL_REQUIRED)
+        @Email(message = ValidationMessages.INVALID_EMAIL)
+        @Size(max = 254, message = ValidationMessages.EMAIL_MAX_LENGTH)
         String email,
 
-        @NotBlank(message = "Password is required")
-        @Size(max = 72, message = "Password must have at most 72 characters")
+        @NotBlank(message = ValidationMessages.PASSWORD_REQUIRED)
+        @Size(max = 72, message = ValidationMessages.PASSWORD_MAX_LENGTH)
         String password
 ) {}
