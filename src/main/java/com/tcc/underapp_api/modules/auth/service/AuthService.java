@@ -35,12 +35,12 @@ public class AuthService {
             User user = userService.getByEmail(data.email());
 
             if (!passwordEncoder.matches(data.password(), user.getPassword())) {
-                throw new UnauthorizedExcepition("Invalid credentials");
+                throw new UnauthorizedExcepition("Invalid credentials", "E-mail ou senha inválidos.");
             }
 
             return tokenService.generateToken(user);
         } catch (Exception e) {
-            throw new UnauthorizedExcepition("Invalid credentials");
+            throw new UnauthorizedExcepition("Invalid credentials", "E-mail ou senha inválidos.");
         }
     }
 

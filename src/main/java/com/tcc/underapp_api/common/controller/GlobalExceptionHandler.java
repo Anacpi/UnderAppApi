@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiResponse<String>> handleConflictException(ConflictException ex) {
-        return ResponseEntity.status(409).body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(409).body(ApiResponse.error(ex.getUserMessage(), ex.getMessage()));
     }
 
     /**
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ClientException.class)
     public ResponseEntity<ApiResponse<String>> handleClientException(ClientException ex) {
-        return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.badRequest().body(ApiResponse.error(ex.getUserMessage(), ex.getMessage()));
     }
 
     /**
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(404).body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(404).body(ApiResponse.error(ex.getUserMessage(), ex.getMessage()));
     }
 
     /**
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnauthorizedExcepition.class)
     public ResponseEntity<ApiResponse<String>> handleUnauthorized(UnauthorizedExcepition ex) {
-        return ResponseEntity.status(401).body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(401).body(ApiResponse.error(ex.getUserMessage(), ex.getMessage()));
     }
 
     /**
@@ -136,6 +136,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.status(500).body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(500)
+                .body(ApiResponse.error("Ocorreu um erro interno no servidor.", ex.getMessage()));
     }
 }

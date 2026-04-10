@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@RequestBody @Valid LoginRequest data) {
         String token = authService.login(data);
-        return ApiResponse.success(new LoginResponse(token));
+        return ApiResponse.success("Login realizado com sucesso.", new LoginResponse(token));
     }
 
     /**
@@ -49,6 +49,6 @@ public class AuthController {
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@RequestBody @Valid RegisterRequest data) {
         User user = authService.register(data);
-        return ApiResponse.success(userService.getUserResponse(user));
+        return ApiResponse.success("Conta criada com sucesso.", userService.getUserResponse(user));
     }
 }

@@ -42,7 +42,7 @@ public class UserService {
      */
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", "Usuário não encontrado."));
     }
 
     /**
@@ -57,7 +57,7 @@ public class UserService {
     public User getByEmail(String email) {
         String normalizedEmail = normalizeEmail(email);
         return userRepository.findByEmail(normalizedEmail)
-            .orElseThrow(() -> new NotFoundException("User not founad"));
+            .orElseThrow(() -> new NotFoundException("User not found", "Usuário não encontrado."));
     }
 
     /**
@@ -87,7 +87,7 @@ public class UserService {
 
             return userRepository.save(user);
         } catch (Exception e) {
-            throw new ClientException("Error creating user", e.getMessage());
+            throw new ClientException("Error creating user: " + e.getMessage(), "Não foi possível criar o usuário.", e);
         }
     }
 
@@ -143,7 +143,7 @@ public class UserService {
     private void validateUserExists(String email) {
         userRepository.findByEmail(email)
             .ifPresent(user -> {
-                throw new ConflictException("Email already in use");
+                throw new ConflictException("Email already in use", "Este e-mail já está em uso.");
             });
     }
 
@@ -165,18 +165,18 @@ public class UserService {
     @Transactional
     public String uploadProfileImage(Long userId, MultipartFile image) {
         if (image == null) {
-            throw new ClientException("Image file is null");
+            throw new ClientException("Image file is null", "Envie uma imagem para continuar.");
         }
 
         // Validação de tipo de arquivo
         String contentType = image.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new ClientException("Invalid file type. Only images are allowed.");
+            throw new ClientException("Invalid file type. Only images are allowed.", "Envie um arquivo de imagem válido.");
         }
 
         // Validação de tamanho
         if (image.getSize() > 5 * 1024 * 1024) { // 5MB
-            throw new ClientException("File size exceeds limit (5MB).");
+            throw new ClientException("File size exceeds limit (5MB).", "A imagem deve ter no máximo 5MB.");
         }
 
         User user = getById(userId);
@@ -187,7 +187,8 @@ public class UserService {
             updateProfileImage(user, imagePublicId);
             return cloudinaryIntegration.generatePrivateImageUrl(imagePublicId);
         } catch (IOException e) {
-            throw new ClientException("Failed to upload profile image", e.getMessage());
+            throw new ClientException("Failed to upload profile image: " + e.getMessage(),
+                    "Não foi possível enviar a imagem de perfil.", e);
         }
     }
 
@@ -224,7 +225,8 @@ public class UserService {
             try {
                 cloudinaryIntegration.deleteImage(user.getProfileImagePublicId());
             } catch (IOException e) {
-                throw new ClientException("Failed to delete profile image", e.getMessage());
+                throw new ClientException("Failed to delete profile image: " + e.getMessage(),
+                        "Não foi possível remover a imagem de perfil.", e);
             }
 
             user.setProfileImagePublicId(null);

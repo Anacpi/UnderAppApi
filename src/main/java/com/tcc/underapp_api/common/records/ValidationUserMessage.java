@@ -6,24 +6,24 @@ import java.util.Arrays;
  * Maps technical validation messages to frontend-facing messages in Portuguese.
  */
 public enum ValidationUserMessage {
-    EMAIL_REQUIRED(ValidationMessages.EMAIL_REQUIRED, "O e-mail e obrigatorio."),
-    INVALID_EMAIL(ValidationMessages.INVALID_EMAIL, "Informe um e-mail valido."),
-    EMAIL_MAX_LENGTH(ValidationMessages.EMAIL_MAX_LENGTH, "O e-mail deve ter no maximo 254 caracteres."),
-    PASSWORD_REQUIRED(ValidationMessages.PASSWORD_REQUIRED, "A senha e obrigatoria."),
-    PASSWORD_MAX_LENGTH(ValidationMessages.PASSWORD_MAX_LENGTH, "A senha deve ter no maximo 72 caracteres."),
+    EMAIL_REQUIRED(ValidationMessages.EMAIL_REQUIRED, "O e-mail é obrigatório."),
+    INVALID_EMAIL(ValidationMessages.INVALID_EMAIL, "Informe um e-mail válido."),
+    EMAIL_MAX_LENGTH(ValidationMessages.EMAIL_MAX_LENGTH, "O e-mail deve ter no máximo 254 caracteres."),
+    PASSWORD_REQUIRED(ValidationMessages.PASSWORD_REQUIRED, "A senha é obrigatória."),
+    PASSWORD_MAX_LENGTH(ValidationMessages.PASSWORD_MAX_LENGTH, "A senha deve ter no máximo 72 caracteres."),
     PASSWORD_RANGE(ValidationMessages.PASSWORD_RANGE, "A senha deve ter entre 8 e 72 caracteres."),
     PASSWORD_PATTERN(
             ValidationMessages.PASSWORD_PATTERN,
-            "A senha deve conter pelo menos uma letra maiuscula, uma letra minuscula e um numero."),
-    FIRST_NAME_REQUIRED(ValidationMessages.FIRST_NAME_REQUIRED, "O primeiro nome e obrigatorio."),
+            "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número."),
+    FIRST_NAME_REQUIRED(ValidationMessages.FIRST_NAME_REQUIRED, "O primeiro nome é obrigatório."),
     FIRST_NAME_RANGE(ValidationMessages.FIRST_NAME_RANGE, "O primeiro nome deve ter entre 2 e 100 caracteres."),
     FIRST_NAME_PATTERN(ValidationMessages.FIRST_NAME_PATTERN, "O primeiro nome deve conter apenas letras."),
-    LAST_NAME_REQUIRED(ValidationMessages.LAST_NAME_REQUIRED, "O sobrenome e obrigatorio."),
+    LAST_NAME_REQUIRED(ValidationMessages.LAST_NAME_REQUIRED, "O sobrenome é obrigatório."),
     LAST_NAME_RANGE(ValidationMessages.LAST_NAME_RANGE, "O sobrenome deve ter entre 2 e 100 caracteres."),
     LAST_NAME_PATTERN(ValidationMessages.LAST_NAME_PATTERN, "O sobrenome deve conter apenas letras."),
-    CEP_REQUIRED(ValidationMessages.CEP_REQUIRED, "O CEP e obrigatorio."),
-    CEP_PATTERN(ValidationMessages.CEP_PATTERN, "O CEP deve conter exatamente 8 digitos."),
-    INVALID_BODY(ValidationMessages.INVALID_BODY, "Corpo da requisicao invalido ou mal formatado."),
+    CEP_REQUIRED(ValidationMessages.CEP_REQUIRED, "O CEP é obrigatório."),
+    CEP_PATTERN(ValidationMessages.CEP_PATTERN, "O CEP deve conter exatamente 8 dígitos."),
+    INVALID_BODY(ValidationMessages.INVALID_BODY, "Corpo da requisição inválido ou mal formatado."),
     INVALID_TYPE("", "");
 
     private final String technicalMessage;
@@ -48,7 +48,7 @@ public enum ValidationUserMessage {
                 .filter(value -> value.technicalMessage.equals(technicalMessage))
                 .findFirst()
                 .map(ValidationUserMessage::userMessage)
-                .orElse("O campo informado e invalido.");
+                .orElse("O campo informado é inválido.");
     }
 
     public static String invalidTypeMessage(String fieldName, String expectedType) {

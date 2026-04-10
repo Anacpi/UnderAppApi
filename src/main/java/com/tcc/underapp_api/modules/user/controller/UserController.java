@@ -49,7 +49,7 @@ public class UserController {
             @RequestBody @Valid UpdateUserRequest data
     ) {
         var updatedUser = userService.updateUser(id, data);
-        return ApiResponse.success(userService.getUserResponse(updatedUser));
+        return ApiResponse.success("Perfil atualizado com sucesso.", userService.getUserResponse(updatedUser));
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserController {
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteMe(@AuthenticationPrincipal Long id) {
         userService.deleteUser(id);
-        return ApiResponse.success(null);
+        return ApiResponse.success("Conta removida com sucesso.", null);
     }
 
     /**
@@ -82,7 +82,7 @@ public class UserController {
             @RequestParam("image") MultipartFile image
     ) {
         String imageUrl = userService.uploadProfileImage(id, image);
-        return ApiResponse.success(Map.of("profileImageUrl", imageUrl));
+        return ApiResponse.success("Imagem de perfil enviada com sucesso.", Map.of("profileImageUrl", imageUrl));
     }
 
     /**
@@ -95,6 +95,6 @@ public class UserController {
     @DeleteMapping("/me/profile-image")
     public ApiResponse<Void> deleteProfileImage(@AuthenticationPrincipal Long id) {
         userService.removeProfileImage(id);
-        return ApiResponse.success(null);
+        return ApiResponse.success("Imagem de perfil removida com sucesso.", null);
     }
 }

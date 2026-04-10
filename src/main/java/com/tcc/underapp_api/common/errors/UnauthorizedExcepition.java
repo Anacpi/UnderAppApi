@@ -3,7 +3,7 @@ package com.tcc.underapp_api.common.errors;
 /**
  * Exception thrown when a user is not authorized to access a resource.
  */
-public class UnauthorizedExcepition extends RuntimeException {
+public class UnauthorizedExcepition extends AppException {
 
     /**
      * Constructs a new UnauthorizedExcepition with the specified message.
@@ -12,6 +12,16 @@ public class UnauthorizedExcepition extends RuntimeException {
      */
     public UnauthorizedExcepition(String message) {
         super(message);
+    }
+
+    /**
+     * Constructs a new UnauthorizedExcepition with a technical and user-facing message.
+     *
+     * @param message the technical message
+     * @param userMessage the message intended for the frontend
+     */
+    public UnauthorizedExcepition(String message, String userMessage) {
+        super(message, userMessage);
     }
 
     /**
