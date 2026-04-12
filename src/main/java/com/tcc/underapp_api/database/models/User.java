@@ -66,7 +66,7 @@ public class User {
     @org.hibernate.annotations.UpdateTimestamp
     private Instant updatedAt;
 
-    @Column(name = "deleted_at", nullable = true)
+    @Column(name = "deleted_at")
     private Instant deletedAt;
 
     /**
