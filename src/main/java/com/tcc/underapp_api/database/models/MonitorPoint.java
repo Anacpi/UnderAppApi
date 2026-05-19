@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,42 @@ public class MonitorPoint {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
+
+    /** Unit: N/m^2. */
+    @Column(name = "cohesion", nullable = false, precision = 18, scale = 6)
+    private BigDecimal cohesion;
+
+    /** Unit: kg/m^3. */
+    @Column(name = "wet_soil_density", nullable = false, precision = 18, scale = 6)
+    private BigDecimal wetSoilDensity;
+
+    /** Unit: m/s^2. */
+    @Column(name = "gravity_acceleration", nullable = false, precision = 18, scale = 6)
+    private BigDecimal gravityAcceleration;
+
+    /** Unit: m. */
+    @Column(name = "soil_depth", nullable = false, precision = 18, scale = 6)
+    private BigDecimal soilDepth;
+
+    /** Unit: degrees. */
+    @Column(name = "slope_angle", nullable = false, precision = 18, scale = 6)
+    private BigDecimal slopeAngle;
+
+    /** Unit: kg/m^3. */
+    @Column(name = "water_density", nullable = false, precision = 18, scale = 6)
+    private BigDecimal waterDensity;
+
+    /** Unit: degrees. */
+    @Column(name = "internal_friction_angle", nullable = false, precision = 18, scale = 6)
+    private BigDecimal internalFrictionAngle;
+
+    /** Unit: dimensionless ratio. */
+    @Column(name = "safety_factor_threshold_ratio", nullable = false, precision = 18, scale = 6)
+    private BigDecimal safetyFactorThresholdRatio;
+
+    /** Unit: m. */
+    @Column(name = "sensor_depth", nullable = false, precision = 18, scale = 6)
+    private BigDecimal sensorDepth;
 
     @OneToMany(mappedBy = "monitorPoint")
     private List<RiskAssessment> riskAssessments = new ArrayList<>();
